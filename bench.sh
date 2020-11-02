@@ -11,7 +11,6 @@ export TOKEN=${TOKEN}
 sleep 20
 
 #Test Vault: curl -sH X-Vault-Token:RootToken -XGET http://vault:8200/v1/tud-secret/nginx/key
-
 #Configuration from Vault
 override() {
 
@@ -23,7 +22,7 @@ override() {
     echo $json
     if [[ $? -eq 0 ]]; then
         value=$(echo $json | jq -r .data.value)
-        [[ "${value}" != "null" ]] && echo "Vault Lookup: Override found for $2" && echo ${value} > $2
+        [[ "${value}" != "null" ]] && echo "Vault Lookup: Override found for $2" && echo "${value}" > $2
     fi
 
 }
@@ -33,7 +32,6 @@ mkdir /etc/nginx/sites-enabled
 mkdir -p /etc/pki
 
 #Measure latency 
-
 startVault=`date +%s%6N` #microseconds
 override nginx.conf    /etc/nginx/nginx.conf
 override default.conf /etc/nginx/sites-enabled/default.conf
@@ -52,6 +50,7 @@ while [ "$CODE" -ne "200" ]; do
     echo -e "\tTest failed, nginx not running."
     CODE=`curl -o /dev/null -s -w "%{http_code}" http://127.0.0.1:80`
 done
+echo -e "\tTest succeeded!, nginx is running with configuration from Vault."
 endNginx=`date +%s%6N`
 runtime=$((endNginx-startNginx))
 totalTime=$((endNginx-startVault))

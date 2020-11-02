@@ -7,8 +7,8 @@ set -x
      PID=$!
 
      export VAULT_ADDR='http://127.0.0.1:8200'
-     #vault secrets enable -path=tud-secret kv
-     vault mount -path=tud-secret -local generic
+     vault secrets enable -path=tud-secret kv
+     #vault mount -path=tud-secret kv
      vault write tud-secret/nginx/default.conf value=@./config/default.conf
      vault write tud-secret/nginx/nginx.conf value=@./config/nginx.conf
      vault write tud-secret/nginx/ssl.conf value=@./config/ssl.conf
