@@ -1,11 +1,12 @@
 version: '3.2'
 services:
     vault:
-        image: registry.scontain.com:5050/sconecuratedimages/apps:vault-1.5.3-alpine-scone5
+        image: registry.scontain.com:5050/sconecuratedimages/apps:vault-1.5.3-alpine-scone5.7.0
         command: sh -c "cd build_dir && ./start_vault.sh"
         environment:
          - VAULT_DEV_ROOT_TOKEN_ID=RootToken
          - SCONE_MODE=sim  
+         - SCONE_FORK=1 
         volumes:
          - ./:/build_dir
         cap_add:
@@ -13,14 +14,16 @@ services:
         devices:
          - "/dev/isgx"           
     scone-vault-nginx:
-        image: registry.scontain.com:5050/sconecuratedimages/apps:nginx-1.14.2-alpine-scone5
+        image: registry.scontain.com:5050/sconecuratedimages/apps:nginx-1.21.3-alpine-scone5.7.0
         environment:
          - URL="http://vault:8200"
          - INDEX=nginx
          - VAULT_ADDR="http://vault:8200"
          - TOKEN=RootToken
          - SCONE_VERSION=1 
-         - SCONE_MODE=sim  
+         - SCONE_MODE=sim
+         - SCONE_FORK=1
+
         command: sh -c "cd build_dir && ./install-deps.sh && ./bench.sh"
         volumes:
          - ./:/build_dir
